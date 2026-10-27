@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, timeAgo } from '../api.js';
 import { useAuth } from '../AuthContext.jsx';
+import Avatar from '../Avatar.jsx';
 
 export default function Question() {
   const { id } = useParams();
@@ -46,7 +47,7 @@ export default function Question() {
   return (
     <div className="narrow wide">
       <h1>{q.title}</h1>
-      <p className="muted">Asked by {q.author ? <Link to={`/users/${q.author._id}`}>{q.author.name}</Link> : 'a deleted user'}, {timeAgo(q.createdAt)}</p>
+      <p className="muted byline"><Avatar name={q.author?.name} size={24} /> Asked by {q.author ? <Link to={`/users/${q.author._id}`}>{q.author.name}</Link> : 'a deleted user'}, {timeAgo(q.createdAt)}</p>
       {err && <p className="error" role="alert">{err}</p>}
       <div className="panel">
         <p className="body-text">{q.body}</p>
@@ -77,7 +78,8 @@ export default function Question() {
               {solved && <span className="mark">Solution</span>}
               <p className="body-text">{a.body}</p>
               <div className="row-foot">
-                <span className="muted">
+                <span className="muted byline">
+                  <Avatar name={a.author?.name} size={22} />
                   {a.author ? <Link to={`/users/${a.author._id}`}>{a.author.name}</Link> : 'a deleted user'}
                   {a.author && ` (${a.author.reputation} rep)`}, {timeAgo(a.createdAt)}
                 </span>

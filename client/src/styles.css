@@ -86,3 +86,44 @@ label input, label textarea { margin-top: .3rem; font-weight: 400; }
   .stat { width: 56px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---- Visual refresh: notebook theme ---- */
+.header { box-shadow: 0 1px 0 rgba(18, 24, 43, .04); }
+.nav-user { display: inline-flex; align-items: center; gap: .45rem; color: var(--ink); }
+.avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-weight: 600; flex: none; line-height: 1; }
+.byline { display: inline-flex; align-items: center; gap: .4rem; margin-left: auto; }
+.profile-head { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+.profile-head h1 { margin: 0; }
+
+.hero {
+  margin: 1.5rem 0 1.8rem; padding: 32px 2rem 32px 5rem; border: 1px solid var(--line); border-radius: 10px; background-color: #fff;
+  background-image:
+    linear-gradient(90deg, transparent 58px, #efa3a3 58px, #efa3a3 60px, transparent 60px),
+    repeating-linear-gradient(transparent, transparent 31px, #dce5f6 31px, #dce5f6 32px);
+}
+.hero h1 { margin: 0; font-size: 2.5rem; line-height: 64px; font-weight: 800; }
+.hero p { margin: 0; line-height: 32px; font-size: 1.1rem; max-width: 34rem; }
+.hero-actions { display: flex; align-items: center; gap: 1rem; margin-top: 32px; flex-wrap: wrap; }
+.hero-actions .btn { padding: .65rem 1.3rem; }
+
+.section-title { margin: 0; }
+.row { transition: border-color .15s; }
+.row:hover { border-color: #b3bdd3; }
+.row.is-solved { box-shadow: inset 4px 0 0 var(--mark); }
+.row-main { flex: 1; }
+.row-foot .byline { margin-left: auto; }
+.tag:hover { background: #d6ddf6; }
+.tag.on:hover { background: var(--blue-dark); }
+.side { position: sticky; top: 76px; }
+.side h2 { margin-top: 0; }
+.answer, .panel { box-shadow: 0 1px 2px rgba(18, 24, 43, .04); }
+.footer { text-align: center; color: var(--muted); font-size: .88rem; padding: 2rem 1rem 2.5rem; border-top: 1px solid var(--line); margin-top: 2rem; }
+
+@media (max-width: 760px) {
+  .hero { padding: 32px 1rem 32px 3.2rem; background-image:
+    linear-gradient(90deg, transparent 38px, #efa3a3 38px, #efa3a3 40px, transparent 40px),
+    repeating-linear-gradient(transparent, transparent 31px, #dce5f6 31px, #dce5f6 32px); }
+  .hero h1 { font-size: 1.7rem; line-height: 44px; }
+  .side { position: static; }
+  .byline { margin-left: 0; }
+}

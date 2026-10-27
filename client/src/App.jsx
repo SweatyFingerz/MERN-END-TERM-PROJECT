@@ -6,6 +6,7 @@ import Ask from './pages/Ask.jsx';
 import Question from './pages/Question.jsx';
 import Auth from './pages/Auth.jsx';
 import Profile from './pages/Profile.jsx';
+import Avatar from './Avatar.jsx';
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -29,7 +30,7 @@ function Header() {
           {user ? (
             <>
               <Link to="/ask" className="btn primary">Ask a doubt</Link>
-              <Link to={`/users/${user.id}`} className="nav-user">{user.name}</Link>
+              <Link to={`/users/${user.id}`} className="nav-user"><Avatar name={user.name} size={28} />{user.name}</Link>
               <button className="btn ghost" onClick={() => { logout(); nav('/'); }}>Log out</button>
             </>
           ) : (
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="*" element={<p className="muted">Page not found. <Link to="/">Back to all doubts</Link></p>} />
         </Routes>
       </main>
+      <footer className="footer">DoubtHub: a place for students to ask, answer and learn together.</footer>
     </>
   );
 }

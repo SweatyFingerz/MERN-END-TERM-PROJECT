@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, timeAgo } from '../api.js';
+import Avatar from '../Avatar.jsx';
 
 export default function Profile() {
   const { id } = useParams();
@@ -18,7 +19,7 @@ export default function Profile() {
 
   return (
     <div className="narrow wide">
-      <h1>{user.name}</h1>
+      <div className="profile-head"><Avatar name={user.name} size={64} /><h1>{user.name}</h1></div>
       <div className="stats">
         <div className="panel"><strong>{user.reputation}</strong><span>reputation</span></div>
         <div className="panel"><strong>{questions.length}</strong><span>doubts asked</span></div>

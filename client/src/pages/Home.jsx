@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api, timeAgo } from '../api.js';
+import { useAuth } from '../AuthContext.jsx';
+import Avatar from '../Avatar.jsx';
 
 export default function Home() {
+  const { user } = useAuth();
   const [sp, setSp] = useSearchParams();
   const q = sp.get('q') || '';
   const tag = sp.get('tag') || '';
@@ -11,6 +14,7 @@ export default function Home() {
   const [data, setData] = useState(null);
   const [tags, setTags] = useState([]);
   const [err, setErr] = useState('');
+  const filtered = q || tag || sort !== 'new' || page > 1;
 
   useEffect(() => {
     setData(null); setErr('');
@@ -27,59 +31,74 @@ export default function Home() {
   };
 
   return (
-    <div className="layout">
-      <section>
-        <div className="toolbar">
-          <h1>{tag ? `Doubts tagged ${tag}` : q ? `Results for “${q}”` : 'All doubts'}</h1>
-          <div className="tabs" role="tablist">
-            <button className={sort === 'new' ? 'on' : ''} onClick={() => set({ sort: '' })}>Newest</button>
-            <button className={sort === 'unanswered' ? 'on' : ''} onClick={() => set({ sort: 'unanswered' })}>Unanswered</button>
+    <>
+      {!filtered && (
+        <section className="hero">
+          <h1>Stuck on something? Ask your batch.</h1>
+          <p>Post your doubt, get answers from classmates, and mark the one that fixed it.</p>
+          <div className="hero-actions">
+            <Link to={user ? '/ask' : '/register'} className="btn primary">{user ? 'Ask a doubt' : 'Join DoubtHub'}</Link>
+            {data && <span className="muted">{data.total} {data.total === 1 ? 'doubt' : 'doubts'} asked so far</span>}
           </div>
-        </div>
-        {(q || tag) && <button className="link" onClick={() => setSp({})}>Clear filters</button>}
-        {err && <p className="error">{err}</p>}
-        {!data && !err && <p className="muted">Loading doubts…</p>}
-        {data && data.items.length === 0 && (
-          <div className="empty">
-            <p>No doubts match yet.</p>
-            <Link to="/ask" className="btn primary">Ask the first one</Link>
-          </div>
-        )}
-        {data?.items.map((d) => (
-          <article key={d._id} className="row">
-            <div className={'stat' + (d.acceptedAnswer ? ' solved' : '')}>
-              <strong>{d.answerCount}</strong>
-              <span>{d.acceptedAnswer ? 'solved' : d.answerCount === 1 ? 'answer' : 'answers'}</span>
+        </section>
+      )}
+      <div className="layout">
+        <section>
+          <div className="toolbar">
+            <h2 className="section-title">{tag ? `Doubts tagged ${tag}` : q ? `Results for “${q}”` : sort === 'unanswered' ? 'Unanswered doubts' : 'Latest doubts'}</h2>
+            <div className="tabs" role="tablist">
+              <button className={sort === 'new' ? 'on' : ''} onClick={() => set({ sort: '' })}>Newest</button>
+              <button className={sort === 'unanswered' ? 'on' : ''} onClick={() => set({ sort: 'unanswered' })}>Unanswered</button>
             </div>
-            <div>
-              <Link to={`/questions/${d._id}`} className="row-title">{d.title}</Link>
-              <p className="snippet">{d.body.length > 140 ? d.body.slice(0, 140) + '…' : d.body}</p>
-              <div className="row-foot">
-                {d.tags.map((t) => <button key={t} className="tag" onClick={() => set({ tag: t })}>{t}</button>)}
-                <span className="muted">Asked by {d.author?.name || 'a deleted user'}, {timeAgo(d.createdAt)}</span>
+          </div>
+          {(q || tag) && <button className="link" onClick={() => setSp({})}>Clear filters</button>}
+          {err && <p className="error">{err}</p>}
+          {!data && !err && <p className="muted">Loading doubts…</p>}
+          {data && data.items.length === 0 && (
+            <div className="empty">
+              <p>No doubts match yet.</p>
+              <Link to="/ask" className="btn primary">Ask the first one</Link>
+            </div>
+          )}
+          {data?.items.map((d) => (
+            <article key={d._id} className={'row' + (d.acceptedAnswer ? ' is-solved' : '')}>
+              <div className={'stat' + (d.acceptedAnswer ? ' solved' : '')}>
+                <strong>{d.answerCount}</strong>
+                <span>{d.acceptedAnswer ? 'solved' : d.answerCount === 1 ? 'answer' : 'answers'}</span>
               </div>
-            </div>
-          </article>
-        ))}
-        {data && data.pages > 1 && (
-          <div className="pager">
-            <button className="btn ghost" disabled={page <= 1} onClick={() => set({ page: String(page - 1) })}>Previous</button>
-            <span className="muted">Page {data.page} of {data.pages}</span>
-            <button className="btn ghost" disabled={page >= data.pages} onClick={() => set({ page: String(page + 1) })}>Next</button>
-          </div>
-        )}
-      </section>
-      <aside className="panel">
-        <h2>Popular tags</h2>
-        {tags.length === 0 && <p className="muted">Tags appear as doubts are asked.</p>}
-        <div className="tag-cloud">
-          {tags.map((t) => (
-            <button key={t.tag} className={'tag' + (t.tag === tag ? ' on' : '')} onClick={() => set({ tag: t.tag })}>
-              {t.tag} <small>{t.count}</small>
-            </button>
+              <div className="row-main">
+                <Link to={`/questions/${d._id}`} className="row-title">{d.title}</Link>
+                <p className="snippet">{d.body.length > 140 ? d.body.slice(0, 140) + '…' : d.body}</p>
+                <div className="row-foot">
+                  {d.tags.map((t) => <button key={t} className="tag" onClick={() => set({ tag: t })}>{t}</button>)}
+                  <span className="byline muted">
+                    <Avatar name={d.author?.name} size={22} />
+                    {d.author?.name || 'a deleted user'}, {timeAgo(d.createdAt)}
+                  </span>
+                </div>
+              </div>
+            </article>
           ))}
-        </div>
-      </aside>
-    </div>
+          {data && data.pages > 1 && (
+            <div className="pager">
+              <button className="btn ghost" disabled={page <= 1} onClick={() => set({ page: String(page - 1) })}>Previous</button>
+              <span className="muted">Page {data.page} of {data.pages}</span>
+              <button className="btn ghost" disabled={page >= data.pages} onClick={() => set({ page: String(page + 1) })}>Next</button>
+            </div>
+          )}
+        </section>
+        <aside className="panel side">
+          <h2>Popular tags</h2>
+          {tags.length === 0 && <p className="muted">Tags appear as doubts are asked.</p>}
+          <div className="tag-cloud">
+            {tags.map((t) => (
+              <button key={t.tag} className={'tag' + (t.tag === tag ? ' on' : '')} onClick={() => set({ tag: t.tag })}>
+                {t.tag} <small>{t.count}</small>
+              </button>
+            ))}
+          </div>
+        </aside>
+      </div>
+    </>
   );
 }
