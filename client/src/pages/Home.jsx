@@ -13,6 +13,7 @@ export default function Home() {
   const page = Number(sp.get('page') || 1);
   const [data, setData] = useState(null);
   const [tags, setTags] = useState([]);
+  const [board, setBoard] = useState(null);
   const [err, setErr] = useState('');
   const filtered = q || tag || sort !== 'new' || page > 1;
 
@@ -21,7 +22,10 @@ export default function Home() {
     api('/questions?' + new URLSearchParams({ q, tag, sort, page })).then(setData).catch((e) => setErr(e.message));
   }, [q, tag, sort, page]);
 
-  useEffect(() => { api('/questions/tags/popular').then(setTags).catch(() => {}); }, []);
+  useEffect(() => {
+    api('/questions/tags/popular').then(setTags).catch(() => {});
+    api('/auth/leaderboard').then(setBoard).catch(() => {});
+  }, []);
 
   const set = (o) => {
     const n = new URLSearchParams(sp);
@@ -42,7 +46,28 @@ export default function Home() {
           </div>
         </section>
       )}
-      <div className="layout">
+
+      <div className="home">
+        <aside className="col col-left">
+          <div className="panel">
+            <h2>Browse</h2>
+            <nav className="menu">
+              <button className={!q && !tag && sort === 'new' ? 'on' : ''} onClick={() => setSp({})}>All doubts</button>
+              <button className={sort === 'unanswered' ? 'on' : ''} onClick={() => set({ sort: 'unanswered' })}>Unanswered</button>
+              <Link to={user ? '/ask' : '/register'}>Ask a doubt</Link>
+              {user && <Link to={`/users/${user.id}`}>My profile</Link>}
+            </nav>
+          </div>
+          {board && (
+            <div className="panel">
+              <h2>Community</h2>
+              <div className="kpi"><span>Students</span><strong>{board.stats.users}</strong></div>
+              <div className="kpi"><span>Doubts</span><strong>{board.stats.questions}</strong></div>
+              <div className="kpi"><span>Answers</span><strong>{board.stats.answers}</strong></div>
+            </div>
+          )}
+        </aside>
+
         <section>
           <div className="toolbar">
             <h2 className="section-title">{tag ? `Doubts tagged ${tag}` : q ? `Results for “${q}”` : sort === 'unanswered' ? 'Unanswered doubts' : 'Latest doubts'}</h2>
@@ -87,15 +112,41 @@ export default function Home() {
             </div>
           )}
         </section>
-        <aside className="panel side">
-          <h2>Popular tags</h2>
-          {tags.length === 0 && <p className="muted">Tags appear as doubts are asked.</p>}
-          <div className="tag-cloud">
-            {tags.map((t) => (
-              <button key={t.tag} className={'tag' + (t.tag === tag ? ' on' : '')} onClick={() => set({ tag: t.tag })}>
-                {t.tag} <small>{t.count}</small>
-              </button>
-            ))}
+
+        <aside className="col">
+          <div className="panel">
+            <h2>Popular tags</h2>
+            {tags.length === 0 && <p className="muted">Tags appear as doubts are asked.</p>}
+            <div className="tag-cloud">
+              {tags.map((t) => (
+                <button key={t.tag} className={'tag' + (t.tag === tag ? ' on' : '')} onClick={() => set({ tag: t.tag })}>
+                  {t.tag} <small>{t.count}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+          {board && board.top.length > 0 && (
+            <div className="panel">
+              <h2>Top contributors</h2>
+              <ul className="leader">
+                {board.top.map((u) => (
+                  <li key={u._id}>
+                    <Avatar name={u.name} size={28} />
+                    <Link to={`/users/${u._id}`}>{u.name}</Link>
+                    <span className="rep">{u.reputation}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="panel">
+            <h2>How it works</h2>
+            <ol className="howto">
+              <li>Ask a doubt with a few tags.</li>
+              <li>Classmates answer and vote.</li>
+              <li>Mark the answer that solved it.</li>
+              <li>Helpful answers earn reputation.</li>
+            </ol>
           </div>
         </aside>
       </div>
