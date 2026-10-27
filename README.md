@@ -10,6 +10,19 @@ A Q&A platform for students, built with the MERN stack. Ask a doubt, get answers
 
 **Demo accounts:** `asha@demo.com` / `demo123` or `meera@demo.com` / `demo123`
 
+## Problem statement
+Students get stuck on coursework doubts, and the answers end up scattered across WhatsApp groups and DMs. They are hard to search, can't be ranked, and disappear after a few days. There is also no way to tell which answer actually fixed the problem.
+
+## Target users
+- **Askers:** students in a batch or college cohort who need help with a specific doubt.
+- **Helpers:** classmates and seniors who answer and build a reputation.
+- **Visitors** (such as mentors) can browse and search every doubt without logging in.
+
+## Solution
+DoubtHub gives every doubt a permanent, searchable page. Classmates answer, the community votes, and the asker marks the answer that solved it. Helpful answers earn reputation, so good helpers become visible.
+
+## Architecture
+
 ## Features
 - Sign up and log in with JWT authentication (passwords hashed with bcrypt)
 - Ask, edit and delete doubts (author only), with up to 5 tags
@@ -29,6 +42,15 @@ A Q&A platform for students, built with the MERN stack. Ask a doubt, get answers
 | Database | MongoDB with Mongoose (answers embedded in the question document) |
 | Auth | JWT (7 days), bcryptjs |
 | Hosting | Vercel (client), Render (server), MongoDB Atlas (database) |
+
+- **Client:** React Router pages (Home, Ask/Edit, Question, Auth, Profile). `AuthContext` holds the logged-in user, and one `api()` helper attaches the JWT and normalises errors.
+- **API:** Express routes for auth and questions. Middleware provides `auth` (required login), `optionalAuth` (adds the viewer's own vote to public pages) and `wrap` (central async error handling).
+- **Data model:** `User` (name, email, hashed password, reputation) and `Question` (title, body, tags, accepted answer, embedded `answers`, each with embedded `votes`).
+- **Core logic:**
+  - A vote can be added, flipped or removed, and the author's reputation changes by the difference (±5).
+  - Accepting a different answer moves the +15 reputation from the old author to the new one. There's no reputation for accepting your own answer.
+  - Deleting an answer reverses its reputation.
+  - Ownership checks run on the server, not just in the UI.
 
 ## Engineering decisions
 - **Embedded answers.** Answers and votes live inside the question document, so the detail page needs one query and an answer's vote can be updated atomically with the question.
