@@ -2,9 +2,13 @@
 
 A Q&A platform for students, built with the MERN stack. Ask a doubt, get answers from classmates, vote on the best ones, and mark the one that solved it. Helpful answers earn reputation.
 
-**Live demo:** <add deployed frontend URL>
-**API:** <add deployed backend URL>/api/health
-**Demo video:** <add link>
+**Live demo:** https://mern-end-term-project-dusky.vercel.app
+**API health check:** https://mern-end-term-project-8h1c.onrender.com/api/health
+**Demo video:** coming soon
+
+> The backend runs on a free tier. If the first load is slow, wait about 60 seconds for the server to wake up, then refresh.
+
+**Demo accounts:** `asha@demo.com` / `demo123` or `meera@demo.com` / `demo123`
 
 ## Features
 - Sign up and log in with JWT authentication (passwords hashed with bcrypt)
