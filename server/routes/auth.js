@@ -49,13 +49,4 @@ router.get('/users/:id', wrap(async (req, res) => {
   });
 }));
 
-router.get('/leaderboard', wrap(async (_req, res) => {
-  const [top, users, questions, ans] = await Promise.all([
-    User.find().sort({ reputation: -1, createdAt: 1 }).limit(5).select('name reputation'),
-    User.countDocuments(),
-    Question.countDocuments(),
-    Question.aggregate([{ $project: { n: { $size: '$answers' } } }, { $group: { _id: null, total: { $sum: '$n' } } }]),
-  ]);
-  res.json({ top, stats: { users, questions, answers: ans[0]?.total || 0 } });
-}));
 module.exports = router;
