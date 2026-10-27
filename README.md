@@ -4,7 +4,7 @@ A Q&A platform for students, built with the MERN stack. Ask a doubt, get answers
 
 **Live demo:** https://mern-end-term-project-dusky.vercel.app
 **API health check:** https://mern-end-term-project-8h1c.onrender.com/api/health
-**Demo video:** coming soon
+**Demo video:** https://drive.google.com/file/d/1FD2b2yiHnMHsc298CwOEM3hGS7oQpjjd/view?usp=sharing
 
 > The backend runs on a free tier. If the first load is slow, wait about 60 seconds for the server to wake up, then refresh.
 
